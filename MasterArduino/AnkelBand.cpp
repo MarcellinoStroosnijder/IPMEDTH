@@ -42,7 +42,7 @@ void AnkelBand::getData(){
   Wire.requestFrom(AnkelbandID, 14, true); // request a total of 14 registers 
   
   AcX1=Wire.read()<<8| Wire.read(); // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L) 
-  AcY1=Wire.read()<<8|  Wire.read(); // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
+  AcY1=Wire.read()<<8| Wire.read(); // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
   AcZ1=Wire.read()<<8| Wire.read(); // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L) 
   Tmp1=Wire.read()<<8| Wire.read(); // 0x41 (TEMP_OUT_H) & 0x42 (TEMP_OUT_L) 
   GyX1=Wire.read()<<8| Wire.read(); // 0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L) 
@@ -63,7 +63,28 @@ void AnkelBand::getData(){
   Serial.println(GyZ1);
  };
 
+
 void AnkelBand::share(){
+  Wire.beginTransmission(8); // transmit to device #8
+  
+  uint8_t xlow = lowByte(AcX1);
+  uint8_t xhigh = highByte(AcX1);
+
+  byte bytesToSend[2] = {xlow, xhigh};
+
+  Serial.println(xlow);
+  Serial.println(xhigh);
+  
+  Wire.write(bytesToSend[0]);
+  Wire.write(bytesToSend[1]);
+
+  
+  Wire.endTransmission();    // stop transmitting
+
+  Serial.println("verzonden");
+  
+
+  delay(500);
 };
 
 void AnkelBand::setXGyroOffset(int16_t offset) {

@@ -64,6 +64,10 @@ void FootBand::getData(){
 };
 
 void FootBand::share(){
+    Wire.beginTransmission(8);
+    Wire.write("X is: ");
+    Serial.println("Data foot verzonden");
+    Serial.println("----------------------");
 };
 
 void FootBand::setXGyroOffset(int16_t offset) {

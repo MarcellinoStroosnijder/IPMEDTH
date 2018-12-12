@@ -6,11 +6,11 @@
 
 AnkelBand ankel;
 FootBand foot;
+
 void setup() {
   
   Wire.begin(); // join i2c bus (address optional for master)
   Serial.begin(9600); // start serial for output. Make sure you set your Serial Monitor to the same!
-
   ankel.registerSensor();
   foot.registerSensor();
   ankel.calibration();
@@ -25,6 +25,9 @@ void loop() {
   foot.getData();
   Serial.println("-------------------------------------------------------");
 
+  ankel.share();
+//  foot.share();
+  
   delay(500); // only read every 0,5 seconds
 }
  
