@@ -2,6 +2,8 @@
 // Created by Marcellino on 04/12/2018.
 //
 
+// --------- MPU Settings -------------- //
+
 #define MPU6050_RA_XG_OFFS_USRH        (0x13) 
 #define MPU6050_RA_YG_OFFS_USRH        (0x15) 
 #define MPU6050_RA_ZG_OFFS_USRH        (0x17) 
@@ -11,3 +13,20 @@
 
 #define AnkelbandID                    (0x68)      //Ankelband
 #define FootbandID                     (0x69)      //Footband 
+
+// --------- Motors Settings -------------- //
+
+#define EN 8
+
+//#define X_STP     2
+//#define X_DIR     5
+
+#define Y_STP     3
+#define Y_DIR     6
+
+//#define Z_DIR     7
+//#define Z_STP     4
+
+// --------- Others -------------- //
+
+#define delayTime 360

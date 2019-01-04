@@ -1,5 +1,6 @@
 //
 // Created by Marcellino on 03/12/2018.
+// 
 //
 
 #include "FootBand.h"
@@ -23,9 +24,9 @@ void FootBand::registerSensor(){
 };
 
 void FootBand::calibration(){
-  this->setXAccelOffset(1858); // 1688 factory default for my test chip
-  this->setYAccelOffset(-3093); // 1688 factory default for my test chip
-  this->setZAccelOffset(2138); // 1688 factory default for my test chip
+  this->setXAccelOffset(1858); 
+  this->setYAccelOffset(-3093); 
+  this->setZAccelOffset(2138); 
 
   this->setXGyroOffset(387);
   this->setYGyroOffset(98);
@@ -64,10 +65,26 @@ void FootBand::getData(){
 };
 
 void FootBand::share(){
-    Wire.beginTransmission(8);
-    Wire.write("X is: ");
-    Serial.println("Data foot verzonden");
-    Serial.println("----------------------");
+    Wire.beginTransmission(8); // transmit to device #8
+  
+    uint8_t xlow = lowByte(AcX2);
+    uint8_t xhigh = highByte(AcX2);
+  
+    byte bytesToSend[2] = {xlow, xhigh};
+  
+    Serial.println(xlow);
+    Serial.println(xhigh);
+    
+    Wire.write(bytesToSend[0]);
+    Wire.write(bytesToSend[1]);
+  
+    
+    Wire.endTransmission();    // stop transmitting
+  
+    Serial.println("verzonden");
+    
+  
+    delay(500);
 };
 
 void FootBand::setXGyroOffset(int16_t offset) {

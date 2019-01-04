@@ -27,5 +27,5 @@ void receiveEvent(int howMany) {
 
   int AcX1 = high * 256 + low;
   Serial.println(AcX1);
-
+  
 }

@@ -10,6 +10,10 @@
 
 int16_t AcX1,AcY1,AcZ1,Tmp1,GyX1,GyY1,GyZ1;
 
+int minVal=265; int maxVal=402;
+
+double x; double y; double z;
+
 using namespace std;
 
 void AnkelBand::registerSensor(){
@@ -60,7 +64,18 @@ void AnkelBand::getData(){
   Serial.print(" | GyY = "); 
   Serial.print(GyY1);
   Serial.print(" | GyZ = ");
-  Serial.println(GyZ1);
+  Serial.print(GyZ1);
+
+   int xAng = map(AcX1,minVal,maxVal,-90,90); int yAng = map(AcY1,minVal,maxVal,-90,90); int zAng = map(AcZ1,minVal,maxVal,-90,90);
+  
+   x= RAD_TO_DEG * (atan2(-yAng, -zAng)+PI); y= RAD_TO_DEG * (atan2(-xAng, -zAng)+PI); z= RAD_TO_DEG * (atan2(-yAng, -xAng)+PI);
+    
+   Serial.print(" | AngleX= "); Serial.print(x);
+    
+   Serial.print(" | AngleY= "); Serial.print(y);
+    
+   Serial.print(" | AngleZ= "); Serial.println(z); 
+  
  };
 
 
