@@ -1,127 +1,125 @@
-//
-// Created by Marcellino on 03/12/2018.
-//
+///////////////////////////////////////////////////////////////////////////////////////
+//THIS IS A DEMO SOFTWARE JUST FOR EXPERIMENT PURPOER IN A NONCOMERTIAL ACTIVITY
+//Version: 1.0 (AUG, 2016)
 
-#include "AnkelBand.h"
+//Gyro - Arduino UNO R3
+//VCC  -  5V
+//GND  -  GND
+//SDA  -  A4
+//SCL  -  A5
+//INT - port-2
+
 #include <Wire.h>
 #include <Arduino.h>
-#include "Settings.h"
-#include <I2Cdev.h>
+#include "AnkelBand.h"
 
-int16_t AcX1,AcY1,AcZ1,Tmp1,GyX1,GyY1,GyZ1;
+//Declaring some global variables
+int gyro_x, gyro_y, gyro_z;
+long gyro_x_cal, gyro_y_cal, gyro_z_cal;
+boolean set_gyro_angles;
 
-int minVal=265; int maxVal=402;
+long acc_x, acc_y, acc_z, acc_total_vector;
+float angle_roll_acc, angle_pitch_acc;
 
-double x; double y; double z;
+float angle_pitch, angle_roll;
+int angle_pitch_buffer, angle_roll_buffer;
+float angle_pitch_output, angle_roll_output;
 
-using namespace std;
+long loop_timer;
+int temp;
 
-void AnkelBand::registerSensor(){
-  Wire.begin();
-  Wire.beginTransmission(AnkelbandID);
-  Wire.write(0x6B);// PWR_MGMT_1 register 
-  Wire.write(0); // set to zero (wakes up the MPU-6050)
-  Wire.endTransmission(true);
+void AnkelBand::setupSensor() {
+  Wire.begin();                                                        //Start I2C as master
+  setup_mpu_6050_registers();                                          //Setup the registers of the MPU-6050 
+  for (int cal_int = 0; cal_int < 1000 ; cal_int ++){                  //Read the raw acc and gyro data from the MPU-6050 for 1000 times
+    read_mpu_6050_data();                                             
+    gyro_x_cal += gyro_x;                                              //Add the gyro x offset to the gyro_x_cal variable
+    gyro_y_cal += gyro_y;                                              //Add the gyro y offset to the gyro_y_cal variable
+    gyro_z_cal += gyro_z;                                              //Add the gyro z offset to the gyro_z_cal variable
+    delay(3);                                                          //Delay 3us to have 250Hz for-loop
+  }
 
-  Serial.println("Register Ankel Succeeded");
-}
+  // divide by 1000 to get avarage offset
+  gyro_x_cal /= 1000;                                                 
+  gyro_y_cal /= 1000;                                                 
+  gyro_z_cal /= 1000;                                                 
 
-void AnkelBand::calibration(){
-  this->setXAccelOffset(-146); // 1688 factory default for my test chip
-  this->setYAccelOffset(-647); // 1688 factory default for my test chip
-  this->setZAccelOffset(3164); // 1688 factory default for my test chi
-  
-  this->setXGyroOffset(37);
-  this->setYGyroOffset(12);
-  this->setZGyroOffset(30);
-
-  Serial.println("Calibration Ankel Succeeded");
-
+  loop_timer = micros();                                               //Reset the loop timer
 }
 
 void AnkelBand::getData(){
-  Wire.beginTransmission(AnkelbandID); 
-  Wire.write(0x3B); // starting with register 0x3B (ACCEL_XOUT_H) 
-  Wire.endTransmission(false);
-  Wire.requestFrom(AnkelbandID, 14, true); // request a total of 14 registers 
+
+  read_mpu_6050_data();   
+ //Subtract the offset values from the raw gyro values
+  gyro_x -= gyro_x_cal;                                                
+  gyro_y -= gyro_y_cal;                                                
+  gyro_z -= gyro_z_cal;                                                
+         
+  //Gyro angle calculations . Note 0.0000611 = 1 / (250Hz x 65.5)
+  angle_pitch += gyro_x * 0.0000611;                                   //Calculate the traveled pitch angle and add this to the angle_pitch variable
+  angle_roll += gyro_y * 0.0000611;                                    //Calculate the traveled roll angle and add this to the angle_roll variable
+  //0.000001066 = 0.0000611 * (3.142(PI) / 180degr) The Arduino sin function is in radians
+  angle_pitch += angle_roll * sin(gyro_z * 0.000001066);               //If the IMU has yawed transfer the roll angle to the pitch angel
+  angle_roll -= angle_pitch * sin(gyro_z * 0.000001066);               //If the IMU has yawed transfer the pitch angle to the roll angel
   
-  AcX1=Wire.read()<<8| Wire.read(); // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L) 
-  AcY1=Wire.read()<<8| Wire.read(); // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
-  AcZ1=Wire.read()<<8| Wire.read(); // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L) 
-  Tmp1=Wire.read()<<8| Wire.read(); // 0x41 (TEMP_OUT_H) & 0x42 (TEMP_OUT_L) 
-  GyX1=Wire.read()<<8| Wire.read(); // 0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L) 
-  GyY1=Wire.read()<<8| Wire.read(); // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L) 
-  GyZ1=Wire.read()<<8| Wire.read(); // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L) 
-
-  Serial.print("AcX = ");
-  Serial.print(AcX1);
-  Serial.print(" | AcY = "); 
-  Serial.print(AcY1);
-  Serial.print(" | AcZ = ");
-  Serial.print(AcZ1); 
-  Serial.print(" | GyX = ");
-  Serial.print(GyX1); 
-  Serial.print(" | GyY = "); 
-  Serial.print(GyY1);
-  Serial.print(" | GyZ = ");
-  Serial.print(GyZ1);
-
-   int xAng = map(AcX1,minVal,maxVal,-90,90); int yAng = map(AcY1,minVal,maxVal,-90,90); int zAng = map(AcZ1,minVal,maxVal,-90,90);
+  //Accelerometer angle calculations
+  acc_total_vector = sqrt((acc_x*acc_x)+(acc_y*acc_y)+(acc_z*acc_z));  //Calculate the total accelerometer vector
+  //57.296 = 1 / (3.142 / 180) The Arduino asin function is in radians
+  angle_pitch_acc = asin((float)acc_y/acc_total_vector)* 57.296;       //Calculate the pitch angle
+  angle_roll_acc = asin((float)acc_x/acc_total_vector)* -57.296;       //Calculate the roll angle
   
-   x= RAD_TO_DEG * (atan2(-yAng, -zAng)+PI); y= RAD_TO_DEG * (atan2(-xAng, -zAng)+PI); z= RAD_TO_DEG * (atan2(-yAng, -xAng)+PI);
-    
-   Serial.print(" | AngleX= "); Serial.print(x);
-    
-   Serial.print(" | AngleY= "); Serial.print(y);
-    
-   Serial.print(" | AngleZ= "); Serial.println(z); 
+  angle_pitch_acc -= 0.0;                                              //Accelerometer calibration value for pitch
+  angle_roll_acc -= 0.0;                                               //Accelerometer calibration value for roll
+
+  if(set_gyro_angles){                                                 //If the IMU is already started
+    angle_pitch = angle_pitch * 0.9996 + angle_pitch_acc * 0.0004;     //Correct the drift of the gyro pitch angle with the accelerometer pitch angle
+    angle_roll = angle_roll * 0.9996 + angle_roll_acc * 0.0004;        //Correct the drift of the gyro roll angle with the accelerometer roll angle
+  }
+  else{                                                                //At first start
+    angle_pitch = angle_pitch_acc;                                     //Set the gyro pitch angle equal to the accelerometer pitch angle 
+    angle_roll = angle_roll_acc;                                       //Set the gyro roll angle equal to the accelerometer roll angle 
+    set_gyro_angles = true;                                            //Set the IMU started flag
+  }
   
- };
+  //To dampen the pitch and roll angles a complementary filter is used
+  angle_pitch_output = angle_pitch_output * 0.9 + angle_pitch * 0.1;   //Take 90% of the output pitch value and add 10% of the raw pitch value
+  angle_roll_output = angle_roll_output * 0.9 + angle_roll * 0.1;      //Take 90% of the output roll value and add 10% of the raw roll value
+  Serial.print(" Rood = "); Serial.print(angle_roll_output);
 
-
-void AnkelBand::share(){
-  Wire.beginTransmission(8); // transmit to device #8
+ while(micros() - loop_timer < 4000);                                 //Wait until the loop_timer reaches 4000us (250Hz) before starting the next loop
+ loop_timer = micros();//Reset the loop timer
   
-  uint8_t xlow = lowByte(AcX1);
-  uint8_t xhigh = highByte(AcX1);
+}
 
-  byte bytesToSend[2] = {xlow, xhigh};
+void AnkelBand::setup_mpu_6050_registers(){
+  //Activate the MPU-6050
+  Wire.beginTransmission(0x68);                                        //Start communicating with the MPU-6050
+  Wire.write(0x6B);                                                    //Send the requested starting register
+  Wire.write(0x00);                                                    //Set the requested starting register
+  Wire.endTransmission();                                             
+  //Configure the accelerometer (+/-8g)
+  Wire.beginTransmission(0x68);                                        //Start communicating with the MPU-6050
+  Wire.write(0x1C);                                                    //Send the requested starting register
+  Wire.write(0x10);                                                    //Set the requested starting register
+  Wire.endTransmission();                                             
+  //Configure the gyro (500dps full scale)
+  Wire.beginTransmission(0x68);                                        //Start communicating with the MPU-6050
+  Wire.write(0x1B);                                                    //Send the requested starting register
+  Wire.write(0x08);                                                    //Set the requested starting register
+  Wire.endTransmission();                                             
+}
 
-  Serial.println(xlow);
-  Serial.println(xhigh);
-  
-  Wire.write(bytesToSend[0]);
-  Wire.write(bytesToSend[1]);
-
-  
-  Wire.endTransmission();    // stop transmitting
-
-  Serial.println("verzonden");
-  
-
-  delay(500);
-};
-
-void AnkelBand::setXGyroOffset(int16_t offset) {
-    I2Cdev::writeWord(AnkelbandID, MPU6050_RA_YG_OFFS_USRH, offset);
-};
-
-void AnkelBand::setYGyroOffset(int16_t offset) {
-    I2Cdev::writeWord(AnkelbandID, MPU6050_RA_YG_OFFS_USRH, offset);
-};
-
-void AnkelBand::setZGyroOffset(int16_t offset) {
-    I2Cdev::writeWord(AnkelbandID, MPU6050_RA_ZG_OFFS_USRH, offset);
-};
-
-void AnkelBand::setXAccelOffset(int16_t offset) {
-    I2Cdev::writeWord(AnkelbandID, MPU6050_RA_XA_OFFS_H, offset);
-};
-
-void AnkelBand::setYAccelOffset(int16_t offset) {
-    I2Cdev::writeWord(AnkelbandID, MPU6050_RA_YA_OFFS_H, offset);
-};
-
-void AnkelBand::setZAccelOffset(int16_t offset) {
-    I2Cdev::writeWord(AnkelbandID, MPU6050_RA_ZA_OFFS_H, offset);
-};
+void AnkelBand::read_mpu_6050_data(){                                             //Subroutine for reading the raw gyro and accelerometer data
+  Wire.beginTransmission(0x68);                                        //Start communicating with the MPU-6050
+  Wire.write(0x3B);                                                    //Send the requested starting register
+  Wire.endTransmission();                                              //End the transmission
+  Wire.requestFrom(0x68,14);                                           //Request 14 bytes from the MPU-6050
+  while(Wire.available() < 14);                                        //Wait until all the bytes are received
+  acc_x = Wire.read()<<8|Wire.read();                                  
+  acc_y = Wire.read()<<8|Wire.read();                                  
+  acc_z = Wire.read()<<8|Wire.read();                                  
+  temp = Wire.read()<<8|Wire.read();                                   
+  gyro_x = Wire.read()<<8|Wire.read();                                 
+  gyro_y = Wire.read()<<8|Wire.read();                                 
+  gyro_z = Wire.read()<<8|Wire.read();                                 
+}

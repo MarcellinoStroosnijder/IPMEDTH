@@ -14,16 +14,10 @@ using namespace std;
 
 class Sensors {
     public:
-        virtual void registerSensor() = 0;
-        virtual void calibration() = 0;
+        virtual void setupSensor() = 0;
         virtual void getData() = 0;
-        virtual void share() = 0;
-        virtual void setXGyroOffset(int offset) = 0;
-        virtual void setYGyroOffset(int offset) = 0;
-        virtual void setZGyroOffset(int offset) = 0;
-        virtual void setXAccelOffset(int offset) = 0;
-        virtual void setYAccelOffset(int offset) = 0;
-        virtual void setZAccelOffset(int offset) = 0;
+        virtual void setup_mpu_6050_registers() = 0;
+        virtual void read_mpu_6050_data() = 0;
 };
 
 #endif

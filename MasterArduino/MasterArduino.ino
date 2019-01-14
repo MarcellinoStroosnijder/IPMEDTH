@@ -1,47 +1,42 @@
+///////////////////////////////////////////////////////////////////////////////////////
+//THIS IS A DEMO SOFTWARE JUST FOR EXPERIMENT PURPOER IN A NONCOMERTIAL ACTIVITY
+//Version: 1.0 (AUG, 2016)
+
+//Gyro - Arduino UNO R3
+//VCC  -  5V
+//GND  -  GND
+//SDA  -  A4
+//SCL  -  A5
+//INT - port-2
+
 #include <Wire.h>
 #include "AnkelBand.h"
-#include "FootBand.h"
-#include "MotorY.h"
-#include "Settings.h"
+#include "Footband.h"
 
-AnkelBand ankel;
-FootBand foot;
-MotorY motory;
+AnkelBand Ankle;
+FootBand Foot;
 
 void setup() {
-  
-  Wire.begin(); 
-  Serial.begin(9600);
-
-  pinMode(Y_DIR, OUTPUT); pinMode(Y_STP, OUTPUT);
-  pinMode(EN, OUTPUT);
-  digitalWrite(EN, LOW);
-
-  ankel.registerSensor();
-  foot.registerSensor();
-  ankel.calibration();
-  foot.calibration();
-
-
+  Serial.begin(112500);
+  Ankle.setupSensor();
+  Foot.setupSensor();
 }
- 
-void loop() {
 
-// motory.up(500, potPinA2);
-//
-//  Serial.println("down");
-  
-  ankel.getData(); 
-  Serial.println("-------------------------------------------------------");
-  foot.getData();
-  Serial.println("-------------------------------------------------------");
+void loop(){
 
-  //ankel.share();
-  //foot.share();
+ Ankle.getData();
+ Foot.getData();
   
-   delay(500); // only read every 0,5 seconds
 }
- 
- 
-  
+
+
+
+
+
+
+
+
+
+
+
 
