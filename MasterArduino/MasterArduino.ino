@@ -27,12 +27,9 @@ void setup() {
  
 void loop() {
 
-  motory.up(360);
-  delay(100);
-
-  motory.down(360);
-  Serial.println("down");
-  delay(100);
+// motory.up(500, potPinA2);
+//
+//  Serial.println("down");
   
   ankel.getData(); 
   Serial.println("-------------------------------------------------------");
@@ -42,7 +39,7 @@ void loop() {
   //ankel.share();
   //foot.share();
   
-  // delay(500); // only read every 0,5 seconds
+   delay(500); // only read every 0,5 seconds
 }
  
  

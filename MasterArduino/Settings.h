@@ -27,6 +27,11 @@
 //#define Z_DIR     7
 //#define Z_STP     4
 
+// --------- Potentio Meters -------------- //
+
+#define potPinA1 1
+#define potPinA2 2
+
 // --------- Others -------------- //
 
-#define delayTime 360
+#define delayTime 1500
