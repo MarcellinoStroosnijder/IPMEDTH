@@ -12,6 +12,7 @@
 #include <Wire.h>
 #include <Arduino.h>
 #include "FootBand.h"
+#include "Settings.h"
 
 //Declaring some global variables
 int gyro_x2, gyro_y2, gyro_z2;
@@ -29,7 +30,7 @@ long loop_timer2;
 int temp2;
 
 void FootBand::setupSensor() {
-  Wire.begin();                                                        //Start I2C as master
+  Wire.begin(FootbandID);                                                        //Start I2C as master
   setup_mpu_6050_registers();                                          //Setup the registers of the MPU-6050 
   for (int cal_int2 = 0; cal_int2 < 1000 ; cal_int2 ++){                  //Read the raw acc and gyro data from the MPU-6050 for 1000 times
     read_mpu_6050_data();                                             
@@ -59,8 +60,8 @@ void FootBand::getData(){
   angle_pitch2 += gyro_x2 * 0.0000611;                                   //Calculate the traveled pitch angle and add this to the angle_pitch variable
   angle_roll2 += gyro_y2 * 0.0000611;                                    //Calculate the traveled roll angle and add this to the angle_roll variable
   //0.000001066 = 0.0000611 * (3.142(PI) / 180degr) The Arduino sin function is in radians
-  angle_pitch2 += angle_roll2 * sin(gyro_z2 * 0.000001066);               //If the IMU has yawed transfer the roll angle to the pitch angel
-  angle_roll2 -= angle_pitch2 * sin(gyro_z2 * 0.000001066);               //If the IMU has yawed transfer the pitch angle to the roll angel
+  //  angle_pitch2 += angle_roll2 * sin(gyro_z2 * 0.000001066);               //If the IMU has yawed transfer the roll angle to the pitch angel
+  //  angle_roll2 -= angle_pitch2 * sin(gyro_z2 * 0.000001066);               //If the IMU has yawed transfer the pitch angle to the roll angel
   
   //Accelerometer angle calculations
   acc_total_vector2 = sqrt((acc_x2*acc_x2)+(acc_y2*acc_y2)+(acc_z2*acc_z2));  //Calculate the total accelerometer vector
@@ -72,8 +73,8 @@ void FootBand::getData(){
   angle_roll_acc2 -= 0.0;                                               //Accelerometer calibration value for roll
 
   if(set_gyro_angles2){                                                 //If the IMU is already started
-    angle_pitch2 = angle_pitch2 * 0.9996 + angle_pitch_acc2 * 0.0004;     //Correct the drift of the gyro pitch angle with the accelerometer pitch angle
-    angle_roll2 = angle_roll2 * 0.9996 + angle_roll_acc2 * 0.0004;        //Correct the drift of the gyro roll angle with the accelerometer roll angle
+    angle_pitch2 = angle_pitch2 * 0.4 + angle_pitch_acc2 * 0.6;     //Correct the drift of the gyro pitch angle with the accelerometer pitch angle
+    angle_roll2 = angle_roll2 * 0.4 + angle_roll_acc2 * 0.6;        //Correct the drift of the gyro roll angle with the accelerometer roll angle
   }
   else{                                                                //At first start
     angle_pitch2 = angle_pitch_acc2;                                     //Set the gyro pitch angle equal to the accelerometer pitch angle 
@@ -82,8 +83,8 @@ void FootBand::getData(){
   }
   
   //To dampen the pitch and roll angles a complementary filter is used
-  angle_pitch_output2 = angle_pitch_output2 * 0.9 + angle_pitch2 * 0.1;   //Take 90% of the output pitch value and add 10% of the raw pitch value
-  angle_roll_output2 = angle_roll_output2 * 0.9 + angle_roll2 * 0.1;      //Take 90% of the output roll value and add 10% of the raw roll value
+  angle_pitch_output2 = angle_pitch_output2 * 0.6 + angle_pitch2 * 0.4;   //Take 90% of the output pitch value and add 10% of the raw pitch value
+  angle_roll_output2 = angle_roll_output2 * 0.6 + angle_roll2 * 0.4;      //Take 90% of the output roll value and add 10% of the raw roll value
   Serial.print(" | Zwart  = "); Serial.println(angle_roll_output2);
 
  while(micros() - loop_timer2 < 4000);                                 //Wait until the loop_timer reaches 4000us (250Hz) before starting the next loop
@@ -110,10 +111,10 @@ void FootBand::setup_mpu_6050_registers(){
 }
 
 void FootBand::read_mpu_6050_data(){                                             //Subroutine for reading the raw gyro and accelerometer data
-  Wire.beginTransmission(0x69);                                        //Start communicating with the MPU-6050
+  Wire.beginTransmission(FootbandID);                                        //Start communicating with the MPU-6050
   Wire.write(0x3B);                                                    //Send the requested starting register
   Wire.endTransmission();                                              //End the transmission
-  Wire.requestFrom(0x69,14);                                           //Request 14 bytes from the MPU-6050
+  Wire.requestFrom(FootbandID,14);                                           //Request 14 bytes from the MPU-6050
   while(Wire.available() < 14);                                        //Wait until all the bytes are received
   acc_x2 = Wire.read()<<8|Wire.read();                                  
   acc_y2 = Wire.read()<<8|Wire.read();                                  

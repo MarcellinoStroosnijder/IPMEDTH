@@ -12,6 +12,7 @@
 #include <Wire.h>
 #include <Arduino.h>
 #include "AnkelBand.h"
+#include "Settings.h"
 
 //Declaring some global variables
 int gyro_x, gyro_y, gyro_z;
@@ -59,8 +60,8 @@ void AnkelBand::getData(){
   angle_pitch += gyro_x * 0.0000611;                                   //Calculate the traveled pitch angle and add this to the angle_pitch variable
   angle_roll += gyro_y * 0.0000611;                                    //Calculate the traveled roll angle and add this to the angle_roll variable
   //0.000001066 = 0.0000611 * (3.142(PI) / 180degr) The Arduino sin function is in radians
-  angle_pitch += angle_roll * sin(gyro_z * 0.000001066);               //If the IMU has yawed transfer the roll angle to the pitch angel
-  angle_roll -= angle_pitch * sin(gyro_z * 0.000001066);               //If the IMU has yawed transfer the pitch angle to the roll angel
+//  angle_pitch += angle_roll * sin(gyro_z * 0.000001066);               //If the IMU has yawed transfer the roll angle to the pitch angel
+//  angle_roll -= angle_pitch * sin(gyro_z * 0.000001066);               //If the IMU has yawed transfer the pitch angle to the roll angel
   
   //Accelerometer angle calculations
   acc_total_vector = sqrt((acc_x*acc_x)+(acc_y*acc_y)+(acc_z*acc_z));  //Calculate the total accelerometer vector
@@ -72,8 +73,8 @@ void AnkelBand::getData(){
   angle_roll_acc -= 0.0;                                               //Accelerometer calibration value for roll
 
   if(set_gyro_angles){                                                 //If the IMU is already started
-    angle_pitch = angle_pitch * 0.9996 + angle_pitch_acc * 0.0004;     //Correct the drift of the gyro pitch angle with the accelerometer pitch angle
-    angle_roll = angle_roll * 0.9996 + angle_roll_acc * 0.0004;        //Correct the drift of the gyro roll angle with the accelerometer roll angle
+    angle_pitch = angle_pitch * 0.4 + angle_pitch_acc * 0.6;     //Correct the drift of the gyro pitch angle with the accelerometer pitch angle
+    angle_roll = angle_roll * 0.4 + angle_roll_acc * 0.6;        //Correct the drift of the gyro roll angle with the accelerometer roll angle
   }
   else{                                                                //At first start
     angle_pitch = angle_pitch_acc;                                     //Set the gyro pitch angle equal to the accelerometer pitch angle 
@@ -82,8 +83,8 @@ void AnkelBand::getData(){
   }
   
   //To dampen the pitch and roll angles a complementary filter is used
-  angle_pitch_output = angle_pitch_output * 0.9 + angle_pitch * 0.1;   //Take 90% of the output pitch value and add 10% of the raw pitch value
-  angle_roll_output = angle_roll_output * 0.9 + angle_roll * 0.1;      //Take 90% of the output roll value and add 10% of the raw roll value
+  angle_pitch_output = angle_pitch_output * 0.6 + angle_pitch * 0.4;   //Take 90% of the output pitch value and add 10% of the raw pitch value
+  angle_roll_output = angle_roll_output * 0.6 + angle_roll * 0.4;      //Take 90% of the output roll value and add 10% of the raw roll value
   Serial.print(" Rood = "); Serial.print(angle_roll_output);
 
  while(micros() - loop_timer < 4000);                                 //Wait until the loop_timer reaches 4000us (250Hz) before starting the next loop
@@ -93,28 +94,30 @@ void AnkelBand::getData(){
 
 void AnkelBand::setup_mpu_6050_registers(){
   //Activate the MPU-6050
-  Wire.beginTransmission(0x68);                                        //Start communicating with the MPU-6050
+  Wire.beginTransmission(AnkelbandID);                                        //Start communicating with the MPU-6050
   Wire.write(0x6B);                                                    //Send the requested starting register
   Wire.write(0x00);                                                    //Set the requested starting register
   Wire.endTransmission();                                             
   //Configure the accelerometer (+/-8g)
-  Wire.beginTransmission(0x68);                                        //Start communicating with the MPU-6050
+  Wire.beginTransmission(AnkelbandID);                                        //Start communicating with the MPU-6050
   Wire.write(0x1C);                                                    //Send the requested starting register
   Wire.write(0x10);                                                    //Set the requested starting register
   Wire.endTransmission();                                             
   //Configure the gyro (500dps full scale)
-  Wire.beginTransmission(0x68);                                        //Start communicating with the MPU-6050
+  Wire.beginTransmission(AnkelbandID);                                        //Start communicating with the MPU-6050
   Wire.write(0x1B);                                                    //Send the requested starting register
   Wire.write(0x08);                                                    //Set the requested starting register
   Wire.endTransmission();                                             
 }
 
 void AnkelBand::read_mpu_6050_data(){                                             //Subroutine for reading the raw gyro and accelerometer data
-  Wire.beginTransmission(0x68);                                        //Start communicating with the MPU-6050
+  Wire.beginTransmission(AnkelbandID);                                        //Start communicating with the MPU-6050
   Wire.write(0x3B);                                                    //Send the requested starting register
   Wire.endTransmission();                                              //End the transmission
-  Wire.requestFrom(0x68,14);                                           //Request 14 bytes from the MPU-6050
+  Wire.requestFrom(AnkelbandID,14);                                           //Request 14 bytes from the MPU-6050
+        
   while(Wire.available() < 14);                                        //Wait until all the bytes are received
+
   acc_x = Wire.read()<<8|Wire.read();                                  
   acc_y = Wire.read()<<8|Wire.read();                                  
   acc_z = Wire.read()<<8|Wire.read();                                  

@@ -17,7 +17,8 @@ AnkelBand Ankle;
 FootBand Foot;
 
 void setup() {
-  Serial.begin(112500);
+  Serial.begin(115200);
+  Serial.println("gelukt");
   Ankle.setupSensor();
   Foot.setupSensor();
 }
