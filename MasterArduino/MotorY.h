@@ -13,8 +13,7 @@ class MotorY:Motors {
 public:
     void up() override;
     void down() override;
-    void getPosition() override;
-    void setPosition() override;
+    float getPosition() override;
 };
 
 

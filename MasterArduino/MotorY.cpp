@@ -2,14 +2,14 @@
 // Created by Marcellino on 03/01/2019.
 //
 
-#ifndef IPMEDTH_MOTORX_H
-#define IPMEDTH_MOTORX_H
-
 #include "MotorY.h"
 #include "Settings.h"
 #include <Arduino.h>
 
 using namespace std;
+
+float coefficient1 = 0.3515625;
+float constant1 = 0;
 
 void MotorY::up(){
     digitalWrite(Y_DIR, false);
@@ -33,12 +33,9 @@ void MotorY::down(){
      
 };
 
-void MotorY::getPosition(){
-    Serial.println("get position");
+float MotorY::getPosition(){
+     return analogRead(potPinA1) * coefficient1 + constant1;
 };
 
-void MotorY::setPosition(){
-    Serial.println("set poistion");
-};
 
-#endif //IPMEDTH_MOTORX_H
+

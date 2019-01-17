@@ -18,8 +18,8 @@
 
 #define EN 8
 
-//#define X_STP     2
-//#define X_DIR     5
+#define X_STP     2
+#define X_DIR     5
 
 #define Y_STP     3
 #define Y_DIR     6

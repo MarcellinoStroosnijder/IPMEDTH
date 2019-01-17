@@ -24,7 +24,7 @@ float angle_roll_acc, angle_pitch_acc;
 
 float angle_pitch, angle_roll;
 int angle_pitch_buffer, angle_roll_buffer;
-float angle_pitch_output, angle_roll_output;
+float angle_pitch_output, angle_roll_output, anklestrapY, anklestrapX;
 
 long loop_timer;
 int temp;
@@ -85,6 +85,8 @@ void AnkelBand::getData(){
   //To dampen the pitch and roll angles a complementary filter is used
   angle_pitch_output = angle_pitch_output * 0.6 + angle_pitch * 0.4;   //Take 90% of the output pitch value and add 10% of the raw pitch value
   angle_roll_output = angle_roll_output * 0.6 + angle_roll * 0.4;      //Take 90% of the output roll value and add 10% of the raw roll value
+  anklestrapY = (angle_roll_output - 87.0) * -1 ;
+
   Serial.print(" Rood = "); Serial.print(angle_roll_output);
 
  while(micros() - loop_timer < 4000);                                 //Wait until the loop_timer reaches 4000us (250Hz) before starting the next loop

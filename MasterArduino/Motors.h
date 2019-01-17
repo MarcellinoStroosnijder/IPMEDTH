@@ -9,10 +9,8 @@ using namespace std;
 
 class Motors {
     public:
-
         virtual void up() = 0;
         virtual void down() = 0;
-        virtual void getPosition() = 0;
-        virtual void setPosition() = 0;
+        virtual float getPosition() = 0;
 };
 #endif //IPMEDTH_MOTORS_H

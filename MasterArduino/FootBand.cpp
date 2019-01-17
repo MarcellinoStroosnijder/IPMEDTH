@@ -24,7 +24,7 @@ float angle_roll_acc2, angle_pitch_acc2;
 
 float angle_pitch2, angle_roll2;
 int angle_pitch_buffer2, angle_roll_buffer2;
-float angle_pitch_output2, angle_roll_output2;
+float angle_pitch_output2, angle_roll_output2, footstrapY, footstrapX;
 
 long loop_timer2;
 int temp2;
@@ -85,6 +85,8 @@ void FootBand::getData(){
   //To dampen the pitch and roll angles a complementary filter is used
   angle_pitch_output2 = angle_pitch_output2 * 0.6 + angle_pitch2 * 0.4;   //Take 90% of the output pitch value and add 10% of the raw pitch value
   angle_roll_output2 = angle_roll_output2 * 0.6 + angle_roll2 * 0.4;      //Take 90% of the output roll value and add 10% of the raw roll value
+  footstrapY = angle_roll_output2 + 90.0;
+
   Serial.print(" | Zwart  = "); Serial.println(angle_roll_output2);
 
  while(micros() - loop_timer2 < 4000);                                 //Wait until the loop_timer reaches 4000us (250Hz) before starting the next loop
