@@ -11,8 +11,8 @@
 class MotorY:Motors {
 
 public:
-    void up(int steps, int potPin) override;
-    void down(int steps, int potPin) override;
+    void up() override;
+    void down() override;
     void getPosition() override;
     void setPosition() override;
 };

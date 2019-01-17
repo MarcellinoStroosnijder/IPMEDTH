@@ -11,43 +11,26 @@
 
 using namespace std;
 
-void MotorY::up(int einde, int potPin){
+void MotorY::up(){
     digitalWrite(Y_DIR, false);
     delay(1);
     
-    while(1) {
+    digitalWrite(Y_STP, HIGH);
+    delayMicroseconds(delayTime);
+    digitalWrite(Y_STP, LOW);
+    delayMicroseconds(delayTime);
 
-      digitalWrite(Y_STP, HIGH);
-      delayMicroseconds(delayTime);
-      digitalWrite(Y_STP, LOW);
-      delayMicroseconds(delayTime);
-
-      Serial.println(analogRead(potPin)); 
-
-      if(analogRead(potPin) < einde + 20 && analogRead(potPin) > einde - 20 ){
-        break;
-      }
-    }
 };
 
-void MotorY::down(int einde, int potPin){
+void MotorY::down(){
     digitalWrite(Y_DIR, true);
     delay(1);
 
-    while(1) {
-
-      digitalWrite(Y_STP, HIGH);
-      delayMicroseconds(delayTime);
-      digitalWrite(Y_STP, LOW);
-      delayMicroseconds(delayTime);
-
-      Serial.println(potPin); 
-      
-      if(analogRead(potPin) < einde + 20 && analogRead(potPin) > einde - 20){
-        break;
-      }
-    }
-
+    digitalWrite(Y_STP, HIGH);
+    delayMicroseconds(delayTime);
+    digitalWrite(Y_STP, LOW);
+    delayMicroseconds(delayTime);  
+     
 };
 
 void MotorY::getPosition(){

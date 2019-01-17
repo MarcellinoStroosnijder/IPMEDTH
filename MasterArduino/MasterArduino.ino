@@ -12,11 +12,17 @@
 #include <Wire.h>
 #include "AnkelBand.h"
 #include "Footband.h"
+#include "MotorY.h"
+#include "Settings.h"
 
+MotorY MotorY;
 AnkelBand Ankle;
 FootBand Foot;
 
 void setup() {
+  pinMode(EN, OUTPUT);
+  digitalWrite(EN, LOW);
+  
   Serial.begin(115200);
   Serial.println("gelukt");
   Ankle.setupSensor();

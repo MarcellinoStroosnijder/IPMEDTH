@@ -10,8 +10,8 @@ using namespace std;
 class Motors {
     public:
 
-        virtual void up(int steps, int potPin) = 0;
-        virtual void down(int steps, int potPin) = 0;
+        virtual void up() = 0;
+        virtual void down() = 0;
         virtual void getPosition() = 0;
         virtual void setPosition() = 0;
 };
