@@ -16,8 +16,8 @@ extern float footstrapY;
 extern float footstrapX;
 float myAngleY;
 float myAngleX;
-float minY = 0.0;
-float maxY = 70.0;
+float minY = 70;
+float maxY = 118;
 
 
 void setup() {
@@ -34,27 +34,17 @@ void loop(){
  Ankle.getData();
  Foot.getData();
  myAngleY = anklestrapY + footstrapY;
- if(minY < MotorY.getPosition() < maxY){
+ 
+ if(minY < MotorY.getPosition() && MotorY.getPosition() < maxY){
    if(MotorY.getPosition() > myAngleY){
     MotorY.up();
+    Serial.println("up");
    }else if(MotorY.getPosition() < myAngleY){
     MotorY.down();
+    Serial.println("down");
    }
  }
- 
-// Serial.print("4pin:"); Serial.print(anklestrapY);
-// Serial.print("| 5pin:"); Serial.print(footstrapY);
-// Serial.print("| hoekie:"); Serial.println(myAngleY);
+
+ Serial.print("positie:"); Serial.println(MotorY.getPosition());
+ Serial.print("hoekie:"); Serial.println(myAngleY);
 }
-
-
-
-
-
-
-
-
-
-
-
-

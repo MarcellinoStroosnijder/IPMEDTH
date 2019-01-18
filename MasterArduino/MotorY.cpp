@@ -8,8 +8,7 @@
 
 using namespace std;
 
-float coefficient1 = 0.3515625;
-float constant1 = 0;
+float coefficient1 = 7.655555556;
 
 void MotorY::up(){
     digitalWrite(Y_DIR, false);
@@ -19,7 +18,6 @@ void MotorY::up(){
     delayMicroseconds(delayTime);
     digitalWrite(Y_STP, LOW);
     delayMicroseconds(delayTime);
-
 };
 
 void MotorY::down(){
@@ -34,8 +32,5 @@ void MotorY::down(){
 };
 
 float MotorY::getPosition(){
-     return analogRead(potPinA1) * coefficient1 + constant1;
+    return (1024 - analogRead(potPinA2)) / coefficient1;
 };
-
-
-
