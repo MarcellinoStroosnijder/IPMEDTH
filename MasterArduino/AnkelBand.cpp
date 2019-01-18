@@ -87,8 +87,6 @@ void AnkelBand::getData(){
   angle_roll_output = angle_roll_output * 0.6 + angle_roll * 0.4;      //Take 90% of the output roll value and add 10% of the raw roll value
   anklestrapY = (angle_roll_output - 87.0) * -1 ;
 
-  Serial.print(" Rood = "); Serial.print(angle_roll_output);
-
  while(micros() - loop_timer < 4000);                                 //Wait until the loop_timer reaches 4000us (250Hz) before starting the next loop
  loop_timer = micros();//Reset the loop timer
   

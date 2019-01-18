@@ -8,7 +8,7 @@
 
 using namespace std;
 
-float coefficient = 0.3515625;
+float coefficient = 3.555555;
 float constant = 0;
 
 void MotorX::up(){
@@ -29,14 +29,14 @@ void MotorX::down(){
     digitalWrite(X_STP, HIGH);
     delayMicroseconds(delayTime);
     digitalWrite(X_STP, LOW);
-    delayMicroseconds(delayTime);  
+    delayMicroseconds(delayTime);
      
 };
 
 float MotorX::getPosition(){
-     return analogRead(potPinA2) * coefficient + constant;
-
+    // 670 = 0 graden
+    // 830 = 45 graden
+    // 990 = 90 graden
+    // Eigenlijk de potPinA1 (de zwarte)
+     return (analogRead(potPinA2) - 670) / coefficient;
 };
-
-
-

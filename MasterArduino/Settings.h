@@ -34,4 +34,4 @@
 
 // --------- Others -------------- //
 
-#define delayTime 1500
+#define delayTime 2500

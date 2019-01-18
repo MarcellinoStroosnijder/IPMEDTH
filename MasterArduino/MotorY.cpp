@@ -15,7 +15,6 @@ void MotorY::up(){
     delay(1);
     
     digitalWrite(Y_STP, HIGH);
-    delayMicroseconds(delayTime);
     digitalWrite(Y_STP, LOW);
     delayMicroseconds(delayTime);
 };
@@ -25,12 +24,14 @@ void MotorY::down(){
     delay(1);
 
     digitalWrite(Y_STP, HIGH);
-    delayMicroseconds(delayTime);
     digitalWrite(Y_STP, LOW);
     delayMicroseconds(delayTime);  
      
 };
 
 float MotorY::getPosition(){
+    // 465 = 70 graden
+    // 335 = 90 graden
+    // 135 = 128 graden
     return (1024 - analogRead(potPinA2)) / coefficient1;
 };
