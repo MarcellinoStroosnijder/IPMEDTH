@@ -1,14 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////////////
-//THIS IS A DEMO SOFTWARE JUST FOR EXPERIMENT PURPOER IN A NONCOMERTIAL ACTIVITY
-//Version: 1.0 (AUG, 2016)
-
-//Gyro - Arduino UNO R3
-//VCC  -  5V
-//GND  -  GND
-//SDA  -  A4
-//SCL  -  A5
-//INT - port-2
-
 #include <Wire.h>
 #include <Arduino.h>
 #include "AnkelBand.h"

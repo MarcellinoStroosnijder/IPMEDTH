@@ -1,7 +1,3 @@
-//
-// Created by Marcellino on 03/01/2019.
-//
-
 #include "MotorY.h"
 #include "Settings.h"
 #include <Arduino.h>
@@ -32,6 +28,6 @@ void MotorY::down(){
 float MotorY::getPosition(){
     // 465 = 70 graden
     // 335 = 90 graden
-    // 135 = 128 graden
+    // 220 = 128 graden
     return (1024 - analogRead(potPinA2)) / coefficient1;
 };

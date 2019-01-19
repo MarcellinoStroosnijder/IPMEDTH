@@ -1,7 +1,3 @@
-//
-// Created by Marcellino on 17/01/2019.
-//
-
 #include "MotorX.h"
 #include "Settings.h"
 #include <Arduino.h>

@@ -40,13 +40,13 @@ void loop(){
  myAngleX = footstrapX - 45;
 
 // Enkel (motorY)
- if((previousPosY + 2) < myAngleY || (previousPosY - 2) > myAngleY) {
+ if((previousPosY + 4) < myAngleY || (previousPosY - 4) > myAngleY) {
   if(MotorY.getPosition() > myAngleY && MotorY.getPosition() > minY){
-   MotorY.up();
-   Serial.println("up");
+   MotorY.down();
+   Serial.println("down");
   }else if(MotorY.getPosition() < myAngleY && MotorY.getPosition() < maxY){
-    MotorY.down();
-      Serial.println("down");
+    MotorY.up();
+      Serial.println("up");
     }
  }
 
@@ -67,7 +67,8 @@ void loop(){
 
  Serial.print("positieY:"); Serial.println(MotorY.getPosition());
  Serial.print("enkelHoek:"); Serial.println(myAngleY);
+// Serial.print("positieX:"); Serial.println(MotorX.getPosition());
 // Serial.print("voetHoek:"); Serial.println(myAngleX);
 
-// Serial.println(analogRead(potPinA2));
+ Serial.println(analogRead(potPinA2));
 }
