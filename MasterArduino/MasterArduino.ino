@@ -41,35 +41,38 @@ void loop(){
  myAngleX = footstrapX - 45;
 
 // Enkel (motorY)
-// if((previousPosY + 4) < myAngleY || (previousPosY - 4) > myAngleY) {
-//  if(MotorY.getPosition() > myAngleY && MotorY.getPosition() > minY){
-//   MotorY.down();
-//   Serial.println("down");
-//  }else if(MotorY.getPosition() < myAngleY && MotorY.getPosition() < maxY){
-//    MotorY.up();
-//      Serial.println("up");
-//    }
-// }
+ if((previousPosY + 4) < myAngleY || (previousPosY - 4) > myAngleY) {
+  if(MotorY.getPosition() > myAngleY && MotorY.getPosition() > minY){
+   MotorY.up();
+   Serial.println("up");
+  }else if(MotorY.getPosition() < myAngleY && MotorY.getPosition() < maxY){
+    MotorY.down();
+      Serial.println("down");
+    }
+ }
 
-// previousPosY = MotorY.getPosition();
+ previousPosY = MotorY.getPosition();
 
 // Voet (motorX)
  if((previousPosX + 2) < myAngleX || (previousPosX - 2) > myAngleX) {
   if(MotorX.getPosition() > myAngleX && MotorX.getPosition() > minX){
-   MotorY.down();
+   MotorX.down();
    Serial.println("down");
   }else if(MotorX.getPosition() < myAngleX && MotorX.getPosition() < maxX){
-    MotorY.up();
+    MotorX.up();
       Serial.println("up");
     }
  }
 
  previousPosX = MotorX.getPosition();
 
-// Serial.print("positieY:"); Serial.println(MotorY.getPosition());
-// Serial.print("enkelHoek:"); Serial.println(myAngleY);
+ Serial.print("positieY:"); Serial.println(MotorY.getPosition());
+ Serial.print("enkelHoek:"); Serial.println(myAngleY);
  Serial.print("positieX:"); Serial.println(MotorX.getPosition());
  Serial.print("voetHoek:"); Serial.println(myAngleX);
 
+// Serial.println(analogRead(potPinA1));
+// delay(100);
 // Serial.println(analogRead(potPinA2));
+//  delay(100);
 }

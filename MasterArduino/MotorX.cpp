@@ -22,5 +22,5 @@ float MotorX::getPosition(){
     // 830 = 45 graden
     // 990 = 90 graden
     // Eigenlijk de potPinA1 (de zwarte)
-     return (analogRead(potPinA2) - 670) / coefficient;
+     return (analogRead(potPinA1) - 670) / coefficient;
 };
