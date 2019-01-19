@@ -8,25 +8,13 @@ float coefficient = 3.555555;
 float constant = 0;
 
 void MotorX::up(){
-    digitalWrite(X_DIR, false);
-    delay(1);
-    
-    digitalWrite(X_STP, HIGH);
-    delayMicroseconds(delayTime);
-    digitalWrite(X_STP, LOW);
-    delayMicroseconds(delayTime);
-
+    Serial.write("G91 G01 X0.1\n");
+    delay(100);
 };
 
 void MotorX::down(){
-    digitalWrite(X_DIR, true);
-    delay(1);
-
-    digitalWrite(X_STP, HIGH);
-    delayMicroseconds(delayTime);
-    digitalWrite(X_STP, LOW);
-    delayMicroseconds(delayTime);
-     
+    Serial.write("G91 G01 X-0.1\n");
+    delay(100);
 };
 
 float MotorX::getPosition(){

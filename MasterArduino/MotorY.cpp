@@ -7,22 +7,13 @@ using namespace std;
 float coefficient1 = 7.655555556;
 
 void MotorY::up(){
-    digitalWrite(Y_DIR, false);
-    delay(1);
-    
-    digitalWrite(Y_STP, HIGH);
-    digitalWrite(Y_STP, LOW);
-    delayMicroseconds(delayTime);
+    Serial.write("G91 G01 Y0.2\n");
+    delay(100);
 };
 
 void MotorY::down(){
-    digitalWrite(Y_DIR, true);
-    delay(1);
-
-    digitalWrite(Y_STP, HIGH);
-    digitalWrite(Y_STP, LOW);
-    delayMicroseconds(delayTime);  
-     
+    Serial.write("G91 G01 Y-0.2\n");
+    delay(100);
 };
 
 float MotorY::getPosition(){
