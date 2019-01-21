@@ -1,7 +1,3 @@
-//
-// Created by Marcellino on 04/12/2018.
-//
-
 // --------- MPU Settings -------------- //
 
 #define MPU6050_RA_XG_OFFS_USRH        (0x13) 
@@ -34,4 +30,4 @@
 
 // --------- Others -------------- //
 
-#define delayTime 1500
+#define delayTime 2500

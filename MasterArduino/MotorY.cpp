@@ -1,41 +1,24 @@
-//
-// Created by Marcellino on 03/01/2019.
-//
-
 #include "MotorY.h"
 #include "Settings.h"
 #include <Arduino.h>
 
 using namespace std;
 
-float coefficient1 = 0.3515625;
-float constant1 = 0;
+float coefficient1 = 7.655555556;
 
 void MotorY::up(){
-    digitalWrite(Y_DIR, false);
-    delay(1);
-    
-    digitalWrite(Y_STP, HIGH);
-    delayMicroseconds(delayTime);
-    digitalWrite(Y_STP, LOW);
-    delayMicroseconds(delayTime);
-
+    Serial.write("G91 G01 Y0.1\n");
+    delay(100);
 };
 
 void MotorY::down(){
-    digitalWrite(Y_DIR, true);
-    delay(1);
-
-    digitalWrite(Y_STP, HIGH);
-    delayMicroseconds(delayTime);
-    digitalWrite(Y_STP, LOW);
-    delayMicroseconds(delayTime);  
-     
+    Serial.write("G91 G01 Y-0.1\n");
+    delay(100);
 };
 
 float MotorY::getPosition(){
-     return analogRead(potPinA1) * coefficient1 + constant1;
+    // 465 = 70 graden
+    // 335 = 90 graden
+    // 220 = 128 graden
+    return (1024 - analogRead(potPinA2)) / coefficient1;
 };
-
-
-

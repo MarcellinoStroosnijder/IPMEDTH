@@ -1,7 +1,3 @@
-//
-// Created by Marcellino on 03/01/2019.
-//
-
 #ifndef IPMEDTH_MOTORS_H
 #define IPMEDTH_MOTORS_H
 
