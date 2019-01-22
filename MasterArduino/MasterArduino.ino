@@ -38,7 +38,6 @@ void loop(){
  Ankle.getData();
  Foot.getData();
 
- 
 // myAngleY = anklestrapY + footstrapY;
 // myAngleX = 90 - footstrapX;
 // minY = 70;
@@ -54,7 +53,6 @@ void loop(){
  myAngleX = 90;
  minY = 70;
  maxY = 90;
-
 
 // Enkel (motorY)
  if((previousPosY + 4) < myAngleY || (previousPosY - 4) > myAngleY) {
@@ -72,12 +70,12 @@ void loop(){
 // Voet (motorX)
  if((previousPosX + 2) < myAngleX || (previousPosX - 2) > myAngleX) {
   if(MotorX.getPosition() > myAngleX && MotorX.getPosition() > minX){
-   MotorX.up();
-   Serial.println("Links");
+    MotorX.up();
+    Serial.println("Links");
   }else if(MotorX.getPosition() < myAngleX && MotorX.getPosition() < maxX){
     MotorX.down();
-     Serial.println("Rechts");
-    }
+    Serial.println("Rechts");
+  }
  }
 
  previousPosX = MotorX.getPosition();
