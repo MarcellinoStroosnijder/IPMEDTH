@@ -120,11 +120,11 @@ void moveX(){
   }
    if((previousPosX + 2) < myAngleX || (previousPosX - 2) > myAngleX) {
     if(MotorX.getPosition() > myAngleX && MotorX.getPosition() > minX){
-      MotorX.up();
-      Serial.println("Links");
-    }else if(MotorX.getPosition() < myAngleX && MotorX.getPosition() < maxX){
       MotorX.down();
       Serial.println("Rechts");
+    }else if(MotorX.getPosition() < myAngleX && MotorX.getPosition() < maxX){
+      MotorX.up();
+      Serial.println("Links");
     }
    }
   
