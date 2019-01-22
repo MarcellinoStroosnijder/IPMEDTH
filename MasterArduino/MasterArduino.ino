@@ -29,8 +29,8 @@ int standby = 0;
 #define LEDpost 2
 #define LEDleft 3 
 #define LEDright 4
-#define LEDon 5
-#define LEDoff 6
+//#define LEDon 5
+#define LEDoff 5
 #define BUTTprepost 7
 #define BUTTleftright 8
 #define BUTTonoff 9
@@ -64,8 +64,6 @@ void setupMode(){
   if(mode == pre){
    digitalWrite(LEDpre, HIGH);
    digitalWrite(LEDpost, LOW);
-   myAngleY = anklestrapY + footstrapY;
-   myAngleX = 90 - footstrapX;
    minY = 70;
    maxY = 118;
    if(lr == left){
@@ -81,15 +79,11 @@ void setupMode(){
     if(lr == left){
      digitalWrite(LEDleft, HIGH);
      digitalWrite(LEDright, LOW);
-     myAngleY = 90 - footstrapX;
-     myAngleX = 90;
      minY = 70;
      maxY = 98;
     }else{
      digitalWrite(LEDright, HIGH);
      digitalWrite(LEDleft, LOW); 
-     myAngleY = 90 - footstrapX;
-     myAngleX = 90;
      minY = 70;
      maxY = 98;
     }
@@ -97,7 +91,14 @@ void setupMode(){
     
 }
 
-void moveY(float myAngleY, float minY, float maxY){
+void moveY(){
+  if(mode == pre){
+   myAngleY = anklestrapY + footstrapY;
+  }else if (lr == left){
+    myAngleY = 90 - footstrapX;
+  }else{
+    myAngleY = 180 - footstrapX;
+  }
    if((previousPosY + 4) < myAngleY || (previousPosY - 4) > myAngleY) {
     if(MotorY.getPosition() > myAngleY && MotorY.getPosition() > minY){
      MotorY.up();
@@ -111,7 +112,12 @@ void moveY(float myAngleY, float minY, float maxY){
    previousPosY = MotorY.getPosition();
 }
 
-void moveX(float myAngleX){
+void moveX(){
+  if(mode == pre){
+    myAngleX = 90 - footstrapX;
+  }else{
+    myAngleX = 90;
+  }
    if((previousPosX + 2) < myAngleX || (previousPosX - 2) > myAngleX) {
     if(MotorX.getPosition() > myAngleX && MotorX.getPosition() > minX){
       MotorX.up();
@@ -144,8 +150,8 @@ void loop(){
  if(standby == 0){
    Ankle.getData();
    Foot.getData();
-   moveY(myAngleY, minY, maxY);
-   moveX(myAngleX);
+   moveY();
+   moveX();
  }else{
   digitalWrite(LEDpre, LOW);
   digitalWrite(LEDpost, LOW);
