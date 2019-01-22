@@ -22,6 +22,22 @@ float previousPosY;
 float minX = 11;
 float maxX = 85;
 float previousPosX;
+int mode = 0;
+int lr = 0;
+int standby = 0;
+#define LEDpre 1
+#define LEDpost 2
+#define LEDleft 3 
+#define LEDright 4
+#define LEDon 5
+#define LEDoff 6
+#define BUTTprepost 7
+#define BUTTleftright 8
+#define BUTTonoff 9
+#define pre 0
+#define post 1
+#define left 0
+#define right 1
 
 void setup() {
   Serial.begin(115200);
@@ -31,64 +47,122 @@ void setup() {
   Ankle.setupSensor();
   Foot.setupSensor();
   Serial.write("M03\n");
+  pinMode(LEDpre, OUTPUT);
+  pinMode(LEDpost, OUTPUT);
+  pinMode(LEDleft, OUTPUT);
+  pinMode(LEDright, OUTPUT);
+//  pinMode(LEDon, OUTPUT);
+  pinMode(LEDoff, OUTPUT);
+  pinMode(BUTTprepost, INPUT);
+  pinMode(BUTTleftright, INPUT);
+  pinMode(BUTTonoff, INPUT);
+  setupMode();
+}
+
+void setupMode(){
+  digitalWrite(LEDoff, LOW);
+  if(mode == pre){
+   digitalWrite(LEDpre, HIGH);
+   digitalWrite(LEDpost, LOW);
+   myAngleY = anklestrapY + footstrapY;
+   myAngleX = 90 - footstrapX;
+   minY = 70;
+   maxY = 118;
+   if(lr == left){
+    digitalWrite(LEDleft, HIGH);
+    digitalWrite(LEDright, LOW);
+   }else{
+    digitalWrite(LEDright, HIGH);
+    digitalWrite(LEDleft, LOW);
+   }
+  }else{
+    digitalWrite(LEDpre, LOW);
+    digitalWrite(LEDpost, HIGH);
+    if(lr == left){
+     digitalWrite(LEDleft, HIGH);
+     digitalWrite(LEDright, LOW);
+     myAngleY = 90 - footstrapX;
+     myAngleX = 90;
+     minY = 70;
+     maxY = 98;
+    }else{
+     digitalWrite(LEDright, HIGH);
+     digitalWrite(LEDleft, LOW); 
+     myAngleY = 90 - footstrapX;
+     myAngleX = 90;
+     minY = 70;
+     maxY = 98;
+    }
+  }
+    
+}
+
+void moveY(float myAngleY, float minY, float maxY){
+   if((previousPosY + 4) < myAngleY || (previousPosY - 4) > myAngleY) {
+    if(MotorY.getPosition() > myAngleY && MotorY.getPosition() > minY){
+     MotorY.up();
+     //Serial.println("up");
+    }else if(MotorY.getPosition() < myAngleY && MotorY.getPosition() < maxY){
+     MotorY.down();
+     //Serial.println("down");
+    }
+  }
+  
+   previousPosY = MotorY.getPosition();
+}
+
+void moveX(float myAngleX){
+   if((previousPosX + 2) < myAngleX || (previousPosX - 2) > myAngleX) {
+    if(MotorX.getPosition() > myAngleX && MotorX.getPosition() > minX){
+      MotorX.up();
+      Serial.println("Links");
+    }else if(MotorX.getPosition() < myAngleX && MotorX.getPosition() < maxX){
+      MotorX.down();
+      Serial.println("Rechts");
+    }
+   }
+  
+   previousPosX = MotorX.getPosition();
 }
 
 void loop(){
 
- Ankle.getData();
- Foot.getData();
-
-// myAngleY = anklestrapY + footstrapY;
-// myAngleX = 90 - footstrapX;
-// minY = 70;
-// maxY = 118;
-
-
-// myAngleY = anklestrapY + footstrapY;
-// myAngleX = 90 - footstrapX;
-// minY = 90;
-// maxY = 108;
-
- myAngleY = 180 - ( anklestrapY + footstrapY );
- myAngleX = 90;
- minY = 70;
- maxY = 90;
-
-// Enkel (motorY)
- if((previousPosY + 4) < myAngleY || (previousPosY - 4) > myAngleY) {
-  if(MotorY.getPosition() > myAngleY && MotorY.getPosition() > minY){
-   MotorY.up();
-   //Serial.println("up");
-  }else if(MotorY.getPosition() < myAngleY && MotorY.getPosition() < maxY){
-   MotorY.down();
-   //Serial.println("down");
-  }
-}
-
- previousPosY = MotorY.getPosition();
-
-// Voet (motorX)
- if((previousPosX + 2) < myAngleX || (previousPosX - 2) > myAngleX) {
-  if(MotorX.getPosition() > myAngleX && MotorX.getPosition() > minX){
-    MotorX.up();
-    Serial.println("Links");
-  }else if(MotorX.getPosition() < myAngleX && MotorX.getPosition() < maxX){
-    MotorX.down();
-    Serial.println("Rechts");
-  }
+ if(digitalRead(BUTTprepost) == HIGH){
+  mode = (mode + 1) % 2;
+  setupMode();
+  delay(600);
  }
-
- previousPosX = MotorX.getPosition();
-
- Serial.print("positieY:"); Serial.println(MotorY.getPosition());
-// Serial.print("enkelHoek:"); Serial.println(myAngleY);
-// Serial.print("anglestrapY: "); Serial.println(anklestrapY);
-// Serial.print("footstrapX: "); Serial.println(footstrapX);
-// Serial.print("positieX:"); Serial.println(MotorX.getPosition());
-// Serial.print("voetHoek:"); Serial.println(myAngleX);
-
-// Serial.println(analogRead(potPinA1));
-// delay(100);
-// Serial.println(analogRead(potPinA2));
-//  delay(100);
+ if(digitalRead(BUTTleftright) == HIGH){
+  lr = (lr + 1) % 2;
+  setupMode();
+  delay(600);
+ }
+ if(digitalRead(BUTTonoff) == HIGH){
+  standby = (standby + 1) % 2;
+  delay(600);
+ }
+ if(standby == 0){
+   Ankle.getData();
+   Foot.getData();
+   moveY(myAngleY, minY, maxY);
+   moveX(myAngleX);
+ }else{
+  digitalWrite(LEDpre, LOW);
+  digitalWrite(LEDpost, LOW);
+  digitalWrite(LEDleft, LOW);
+  digitalWrite(LEDright, LOW);
+  digitalWrite(LEDoff, HIGH);
+ }
+ 
+//   Serial.print("positieY:"); Serial.println(MotorY.getPosition());
+  // Serial.print("enkelHoek:"); Serial.println(myAngleY);
+  // Serial.print("anglestrapY: "); Serial.println(anklestrapY);
+  // Serial.print("footstrapX: "); Serial.println(footstrapX);
+  // Serial.print("positieX:"); Serial.println(MotorX.getPosition());
+  // Serial.print("voetHoek:"); Serial.println(myAngleX);
+  
+  // Serial.println(analogRead(potPinA1));
+  // delay(100);
+  // Serial.println(analogRead(potPinA2));
+  //  delay(100);
 }
