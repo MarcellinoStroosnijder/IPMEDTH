@@ -4,8 +4,8 @@
 
 using namespace std;
 
-float coefficient = 3.555555;
-float constant = 0;
+float coefficient = 0.3515625;
+float constant = -180;
 
 void MotorX::up(){
     Serial.write("G91 G01 X0.1\n");
@@ -22,5 +22,5 @@ float MotorX::getPosition(){
     // 830 = 90 graden
     // 990 = 135 graden
     // Eigenlijk de potPinA1 (de zwarte)
-     return (analogRead(potPinA1) - 510) / coefficient;
+     return (analogRead(potPinA1)*coefficient + constant);
 };

@@ -30,4 +30,20 @@
 
 // --------- Others -------------- //
 
+#define LEDpre 2
+#define LEDpost 3
+#define LEDleft 4 
+#define LEDright 5
+#define LEDoff 6
+#define BUTTprepost 7
+#define BUTTleftright 8
+#define BUTTonoff 9
+#define pre 0
+#define post 1
+#define left 0
+#define right 1
+#define off 0
+#define on 1
+
+#define buttonTime 200
 #define delayTime 2500
